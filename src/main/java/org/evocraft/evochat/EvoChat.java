@@ -3,6 +3,7 @@ package org.evocraft.evochat;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.evocraft.evochat.chat.ChatManager;
@@ -24,5 +25,10 @@ public class EvoChat {
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         ChatManager.initializeDB();
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event) {
+        ChatManager.flushAndShutdown();
     }
 }
