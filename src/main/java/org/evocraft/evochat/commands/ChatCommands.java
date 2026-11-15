@@ -53,7 +53,7 @@ public class ChatCommands {
                     }
                 })
                 .then(Commands.argument("player", EntityArgument.player())
-                        .then(Commands.argument("minute", IntegerArgumentType.integer(1)) // Minim 1 minut
+                        .then(Commands.argument("minute", IntegerArgumentType.integer(1, 525600)) // Minim 1 minut, max 1 an
 
                                 // Execuție FĂRĂ Motiv
                                 .executes(context -> applyMute(context.getSource(), EntityArgument.getPlayer(context, "player"), IntegerArgumentType.getInteger(context, "minute"), "Unspecified"))
@@ -81,7 +81,7 @@ public class ChatCommands {
                         .executes(context -> {
                             ServerPlayer target = EntityArgument.getPlayer(context, "player");
 
-                            ChatManager.activeMutes.remove(target.getUUID());
+                            ChatManager.clearMute(target.getUUID());
                             context.getSource().sendSuccess(() -> Component.literal("§aRemoved mute from " + target.getName().getString()), false);
                             target.sendSystemMessage(Component.literal("§a✔ You were unmuted by an administrator! You can talk in chat."));
                             return 1;
@@ -91,8 +91,8 @@ public class ChatCommands {
     }
 
     private static int applyMute(CommandSourceStack source, ServerPlayer target, int minutes, String reason) {
-        int seconds = minutes * 60;
-        ChatManager.activeMutes.put(target.getUUID(), seconds);
+        int seconds = (int) Math.min(Integer.MAX_VALUE, (long) minutes * 60L);
+        ChatManager.setMute(target.getUUID(), seconds);
 
         // Anunțăm jucătorul
         target.sendSystemMessage(Component.literal("§8§m--------------------------------"));
